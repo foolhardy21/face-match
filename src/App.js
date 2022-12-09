@@ -34,7 +34,6 @@ function App() {
         setImg1(imageSrc)
       }
     };
-
   async function compare() {
     const img = document.getElementById('img1')
     const faceDescription = await detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
@@ -68,8 +67,7 @@ function App() {
           flexDirection: 'column',
           alignItems: 'flex-end'
         }}>
-
-          <Webcam
+          {/* <Webcam
             audio={false}
             screenshotFormat="image/jpeg"
             width={800}
@@ -80,7 +78,15 @@ function App() {
           <button onClick={capture} style={{
             padding: '10px',
             marginTop: '20px',
-          }}>Capture photo</button>
+          }}>Capture photo</button> */}
+          <input type='file' onChange={(e) => {
+            // console.log(e.target.files)
+            setImg1(URL.createObjectURL(e.target.files[0]))
+          }} />
+          <input type='file' onChange={(e) => {
+            // console.log(e.target.files)
+            setImg2(URL.createObjectURL(e.target.files[0]))
+          }} />
         </div>
         <div style={{
           display: 'flex',
