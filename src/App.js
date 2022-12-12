@@ -28,30 +28,35 @@ function App() {
   const capture =
     () => {
       const imageSrc = webcamRef.current.getScreenshot();
-      if (img1.length > 0) {
-        setImg2(imageSrc)
-      } else {
-        setImg1(imageSrc)
-      }
+      // if (img1.length > 0) {
+      setImg2(imageSrc)
+      // } 
+      // else {
+      //   setImg1(imageSrc)
+      // }
     };
   async function compare() {
-    const img = document.getElementById('img1')
-    const faceDescription = await detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
-    const faceDescriptors = [faceDescription.descriptor]
-    const labeledFaceDescriptors = new LabeledFaceDescriptors('first image', faceDescriptors)
-    console.log(labeledFaceDescriptors)
+    try {
+      const img = document.getElementById('img1')
+      const faceDescription = await detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+      const faceDescriptors = [faceDescription.descriptor]
+      const labeledFaceDescriptors = new LabeledFaceDescriptors('first image', faceDescriptors)
+      console.log(labeledFaceDescriptors)
 
-    const faceMatcher = new FaceMatcher(labeledFaceDescriptors, .6)
-    console.log(faceMatcher)
+      const faceMatcher = new FaceMatcher(labeledFaceDescriptors, .6)
+      console.log(faceMatcher)
 
-    const img2 = document.getElementById('img2')
-    let faceDescription2 = await detectSingleFace(img2).withFaceLandmarks().withFaceDescriptor().withFaceExpressions()
-    faceDescription2 = resizeResults(faceDescription2, img2)
+      const img2 = document.getElementById('img2')
+      let faceDescription2 = await detectSingleFace(img2).withFaceLandmarks().withFaceDescriptor().withFaceExpressions()
+      faceDescription2 = resizeResults(faceDescription2, img2)
 
-    const results = faceMatcher.findBestMatch(faceDescription2.descriptor)
-    console.log(results)
+      const results = faceMatcher.findBestMatch(faceDescription2.descriptor)
+      console.log(results)
+    } catch (e) {
+
+    }
   }
-
+  console.log(img1, img2)
   return (
     <div style={{
       display: 'flex',
@@ -67,7 +72,7 @@ function App() {
           flexDirection: 'column',
           alignItems: 'flex-end'
         }}>
-          {/* <Webcam
+          <Webcam
             audio={false}
             screenshotFormat="image/jpeg"
             width={800}
@@ -78,15 +83,15 @@ function App() {
           <button onClick={capture} style={{
             padding: '10px',
             marginTop: '20px',
-          }}>Capture photo</button> */}
+          }}>Capture photo</button>
           <input type='file' onChange={(e) => {
             // console.log(e.target.files)
             setImg1(URL.createObjectURL(e.target.files[0]))
           }} />
-          <input type='file' onChange={(e) => {
+          {/* <input type='file' onChange={(e) => {
             // console.log(e.target.files)
             setImg2(URL.createObjectURL(e.target.files[0]))
-          }} />
+          }} /> */}
         </div>
         <div style={{
           display: 'flex',
