@@ -28,12 +28,7 @@ function App() {
   const capture =
     () => {
       const imageSrc = webcamRef.current.getScreenshot();
-      // if (img1.length > 0) {
       setImg2(imageSrc)
-      // } 
-      // else {
-      //   setImg1(imageSrc)
-      // }
     };
   async function compare() {
     try {
@@ -47,16 +42,19 @@ function App() {
       console.log(faceMatcher)
 
       const img2 = document.getElementById('img2')
-      let faceDescription2 = await detectSingleFace(img2).withFaceLandmarks().withFaceDescriptor().withFaceExpressions()
-      faceDescription2 = resizeResults(faceDescription2, img2)
+      console.log(img, img2)
 
+      let faceDescription2 = await detectSingleFace(img2).withFaceLandmarks().withFaceDescriptor().withFaceExpressions()
+      console.log(faceDescription2)
+
+      faceDescription2 = resizeResults(faceDescription2, img2)
       const results = faceMatcher.findBestMatch(faceDescription2.descriptor)
       console.log(results)
     } catch (e) {
 
     }
   }
-  console.log(img1, img2)
+  // console.log(img1, img2)
   return (
     <div style={{
       display: 'flex',
@@ -85,13 +83,9 @@ function App() {
             marginTop: '20px',
           }}>Capture photo</button>
           <input type='file' onChange={(e) => {
-            // console.log(e.target.files)
+            console.log(e.target.files[0])
             setImg1(URL.createObjectURL(e.target.files[0]))
           }} />
-          {/* <input type='file' onChange={(e) => {
-            // console.log(e.target.files)
-            setImg2(URL.createObjectURL(e.target.files[0]))
-          }} /> */}
         </div>
         <div style={{
           display: 'flex',
