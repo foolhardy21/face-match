@@ -1,60 +1,47 @@
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import { loadSsdMobilenetv1Model, loadFaceLandmarkModel, loadFaceRecognitionModel, detectAllFaces, bufferToImage, loadFaceExpressionModel, detectSingleFace, LabeledFaceDescriptors, FaceMatcher, resizeResults } from 'face-api.js'
-
+import { SupportedModels, createDetector, MediaPipeFaceMesh } from '@tensorflow-models/face-landmarks-detection'
 const videoConstraints = {
   width: 1280,
   height: 720,
   facingMode: "user"
 };
 
-const MODEL_URL = '/models'
-
 function App() {
-  const [img1, setImg1] = useState('')
+  // const [img1, setImg1] = useState('')
   const [img2, setImg2] = useState('')
   const webcamRef = useRef(null);
 
-  useEffect(() => {
-    (async () => {
-      await loadSsdMobilenetv1Model(MODEL_URL)
-      await loadFaceLandmarkModel(MODEL_URL)
-      await loadFaceRecognitionModel(MODEL_URL)
-      await loadFaceExpressionModel(MODEL_URL)
-    })()
-  }, [])
-
+  // useEffect(() => {
+  //   (async () => {
+  //   })()
+  // }, [])
 
   const capture =
     () => {
       const imageSrc = webcamRef.current.getScreenshot();
       setImg2(imageSrc)
     };
+
   async function compare() {
     try {
-      const img = document.getElementById('img1')
-      const faceDescription = await detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
-      const faceDescriptors = [faceDescription.descriptor]
-      const labeledFaceDescriptors = new LabeledFaceDescriptors('first image', faceDescriptors)
-      console.log(labeledFaceDescriptors)
-
-      const faceMatcher = new FaceMatcher(labeledFaceDescriptors, .6)
-      console.log(faceMatcher)
-
-      const img2 = document.getElementById('img2')
-      console.log(img, img2)
-
-      let faceDescription2 = await detectSingleFace(img2).withFaceLandmarks().withFaceDescriptor().withFaceExpressions()
-      console.log(faceDescription2)
-
-      faceDescription2 = resizeResults(faceDescription2, img2)
-      const results = faceMatcher.findBestMatch(faceDescription2.descriptor)
-      console.log(results)
+      const imgelem = document.getElementById('img2')
+      console.log(imgelem)
+      const model = SupportedModels.MediaPipeFaceMesh;
+      const detectorConfig = {
+        runtime: 'mediapipe', // or 'tfjs'
+        solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh',
+      }
+      console.log(model)
+      const detector = await createDetector(model, detectorConfig);
+      console.log(detector)
+      const faces = await detector.estimateFaces(imgelem);
+      console.log(faces)
     } catch (e) {
 
     }
   }
-  // console.log(img1, img2)
+
   return (
     <div style={{
       display: 'flex',
@@ -82,20 +69,12 @@ function App() {
             padding: '10px',
             marginTop: '20px',
           }}>Capture photo</button>
-          <input type='file' onChange={(e) => {
-            console.log(e.target.files[0])
-            setImg1(URL.createObjectURL(e.target.files[0]))
-          }} />
         </div>
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           marginLeft: '20px',
         }}>
-          <img id='img1' src={img1} alt='' style={{
-            width: '500px',
-            height: 'auto'
-          }} />
           <img id='img2' src={img2} alt='' style={{
             width: '500px',
             height: 'auto'
@@ -107,7 +86,6 @@ function App() {
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        <p>results: </p>
         <button onClick={compare} style={{
           padding: '10px',
           marginTop: '20px',
